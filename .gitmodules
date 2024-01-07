@@ -1,0 +1,3 @@
+[submodule "poco"]
+	path = poco
+	url = git@github.com:xsolar-co/poco.git
