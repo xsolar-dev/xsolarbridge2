@@ -79,15 +79,21 @@ static void messageCallback(struct mosquitto* mosq, void* userdata, const struct
 
     if(message->payloadlen) 
     {
-        LOG_INFO(Poco::format("Received message on topic %s, topic: %s",message->topic, (char*)message->payload));
+        LOG_INFO(Poco::format("Received message on topic %s, topic: %s", std::string(message->topic), std::string((char*)message->payload)));
 
         // Publish a message
-        if (int rc = mosquitto_publish(mosqSink, nullptr, message->topic, message->payloadlen, message->payload, message->qos, false)) 
+        int rc = mosquitto_publish(mosqSink, nullptr, message->topic, message->payloadlen, message->payload, 0, false);
+        
+        if (rc != MOSQ_ERR_SUCCESS) 
         {
             LOG_ERROR(Poco::format("Error %d: Unable to publish the message.", rc));
 
             if (rc == MOSQ_ERR_NO_CONN)
                 mosquitto_reconnect_async(mosqSink);
+        }
+        else
+        {
+            LOG_INFO("Message delivered!");
         }
     }     
 }
