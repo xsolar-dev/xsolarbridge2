@@ -169,7 +169,19 @@ void CMqttBridge::runTask()
     
     // Run the loop to handle incoming messages    
     mosquitto_loop_start(mosqSink);
-    int loopResult = mosquitto_loop_forever(mosqSource, -1, 1);
+    
+    // loop in source
+    while(true)
+    {
+        int rc = mosquitto_loop( mosqSource, -1, 1);
+        if(rc)
+        {
+            LOG_ERROR(Poco::format("Source connection error, %d, restart in 5 sec!", rc));
+            sleep(5);
+            rc = mosquitto_reconnect(mosqSource);
+            LOG_INFO(Poco::format("Source connection result %d, restart in 5 sec!", rc));
+        }
+    }
 
     // Cleanup
     mosquitto_disconnect(mosqSource);

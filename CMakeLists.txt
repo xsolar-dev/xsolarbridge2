@@ -5,6 +5,7 @@ project(xsolarbridge)
 add_executable(
     xsolarbridge
     src/CMqttBridge.cpp
+    src/CMospp.cpp
     src/main.cpp
 )
 
