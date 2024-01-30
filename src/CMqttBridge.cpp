@@ -179,7 +179,19 @@ void CMqttBridge::runTask()
             LOG_ERROR(Poco::format("Source connection error, %d, restart in 5 sec!", rc));
             sleep(5);
             rc = mosquitto_reconnect(mosqSource);
-            LOG_INFO(Poco::format("Source connection result %d, restart in 5 sec!", rc));
+            LOG_INFO(Poco::format("Source connection result %d", rc));
+
+
+            LOG_INFO(Poco::format("Re-Subcription topic %s", topic));
+            if (rc = mosquitto_subscribe(mosqSource, nullptr, topic, qos)) 
+            {
+                LOG_CRIT("Error: Unable to subscribe to the topic.");
+
+                mosquitto_destroy(mosqSource);
+                mosquitto_lib_cleanup();
+                
+                return;
+            }
         }
     }
 
